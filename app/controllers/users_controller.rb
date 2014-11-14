@@ -41,7 +41,7 @@ class UsersController < ApplicationController
 
     respond_to do |format|
       format.html { render :search }
-      format.json { render :search }
+      format.json { render :search}
     end
   end
 

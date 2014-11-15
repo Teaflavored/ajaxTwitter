@@ -4,6 +4,7 @@ $.TweetCompose = function (el) {
   this.$option = this.$el.find("select > option:first-child");
   this.charsRemaining();
   this.submit();
+  this.addMentionedUser();
 };
 
 $.fn.tweetCompose = function () {
@@ -25,7 +26,8 @@ $.TweetCompose.prototype.submit = function() {
   var that = this;
   this.$el.on('submit', function(event){
     event.preventDefault();
-    var formData = $(event.currentTarget).serialize();
+    var formData = $(event.currentTarget).serializeJSON();
+    console.log(formData)
     that.blockInput();
     $.ajax({
       url: "/tweets",
@@ -38,6 +40,26 @@ $.TweetCompose.prototype.submit = function() {
     })
   })
 }
+
+$.TweetCompose.prototype.addMentionedUser = function(){
+  var that = this;
+  this.$el.find('.add-mentioned-user').on('click', function(event) {
+    var scriptTag = that.$el.find('script');
+    that.$el.find('.mentioned-users').append(scriptTag.html())
+    that.removeMentionedUser();
+  })
+
+  
+}
+
+$.TweetCompose.prototype.removeMentionedUser = function(){ 
+  var that = this;
+  this.$el.find('.select-div').on('click', 'a.remove-mentioned-user', function(event) {
+    var $clickedAnchor = $(event.currentTarget);
+    $clickedAnchor.parent("div.select-div").remove();
+  });
+};
+
 $.TweetCompose.prototype.blockInput = function(){
   this.$el.find(":input").attr("disabled", "disabled")
 }
@@ -47,6 +69,7 @@ $.TweetCompose.prototype.clearInput = function(){
   this.$inputs.val('');
   this.$option.attr("selected", "selected");
   this.$el.find('.chars-remaining').html("140 characters left.");
+  this.$el.find("div.mentioned-users").empty();
 }
 
 $.TweetCompose.prototype.handleSuccess = function(tweet){
@@ -56,26 +79,18 @@ $.TweetCompose.prototype.handleSuccess = function(tweet){
   tweetHtml += "<a href=\"/users/" + tweet.user_id + "\">" + tweet.user.username + "</a>--";
   tweetHtml += tweet.created_at + "<br>";
   if (tweet.mentions.length > 0){
-    tweetHtml += "<ul><li><a href=\"/users/" + tweet.mentions[0].user_id + "\">" + tweet.mentions[0].user.username +"</a></li></ul>" 
+    tweetHtml += "<ul>";
+    _.each(tweet.mentions, function(mention){
+      tweetHtml+="<li>"
+      tweetHtml+="<a href=\"/users/" + mention.user_id + "\">" + mention.user.username +"</a>"
+      tweetHtml+="</li>"
+    })
+    tweetHtml += "</ul>"
   } 
   tweetHtml += "</li>";
-  console.log(tweetHtml)
   $(ulSelector).prepend(tweetHtml);
 }
 
 $(function(){
   $('.tweet-compose').tweetCompose();
 })
-
-//
-// <%= tweet.content %>
-// -- <%= link_to tweet.user.username, user_url(tweet.user.id) %>
-// -- <%= tweet.created_at %>
-//
-// <% if tweet.mentioned_users.length > 0 %>
-//   <ul>
-//     <% tweet.mentioned_users.each do |mentioned_user| %>
-//       <li><%= link_to mentioned_user.username, user_url(mentioned_user) %></li>
-//     <% end %>
-//   </ul>
-// <% end %>

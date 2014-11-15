@@ -32,12 +32,11 @@ $.InfiniteTweets.prototype.fetchTweets = function () {
 };
 
 $.InfiniteTweets.prototype.insertTweets = function (tweets) {
-  
   var that = this;
-  _.each(tweets, function(tweet) {
-    var liString = "<li>" + JSON.stringify(tweet) +"</li>";
-    that.$el.find('ul#feed').append(liString);
-  })
+  var liString = that.$el.find('script').html();
+  var templateFn = _.template(liString)
+  var template = templateFn({tweets: tweets})
+  that.$el.find('ul#feed').append(template);
 
   this.maxCreatedAt = tweets[tweets.length - 1 ].created_at;
   if (tweets.length < 20) {

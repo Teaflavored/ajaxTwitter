@@ -20,14 +20,14 @@ $.InfiniteTweets.prototype.fetchTweets = function () {
                    type: "GET",
                    success: function(tweets){
                      that.insertTweets(tweets);
+                     // need to fix so it doesn't insert the one that was just inserted
                    }
                  }
-                   
+
    if (that.maxCreatedAt !== null){
      options.data = {'max_created_at': that.maxCreatedAt }
    }
-   
-   console.log(options)
+
    $.ajax(options);
   })
 };
@@ -43,19 +43,32 @@ $.InfiniteTweets.prototype.insertTweet = function(){
 }
 
 $.InfiniteTweets.prototype.insertTweets = function (tweets) {
-  var liString = this.$el.find('script').html();
-  var templateFn = _.template(liString)
-  var template = templateFn({tweets: tweets})
-  this.$el.find('ul#feed').append(template);
-
-  this.maxCreatedAt = tweets[tweets.length - 1 ].created_at;
   if (tweets.length < 20) {
     this.$el.find('a.fetch-more').remove();
   }
+  var $ulFeed = this.$el.find('ul#feed');
+
+  //get all tweet ids of existing li
+  var $li = $ulFeed.find("li");
+  var tweetIds = $li.map(function(){
+    return $(this).data("tweet-id")
+  }).get();
+  //select those tweets that haven't been shown yet.
+  tweets = _.select(tweets, function(tweet){
+    return tweetIds.indexOf(tweet.id) === -1
+  })
+
+  console.log(tweets)
+
+  var liString = this.$el.find('script').html();
+  var templateFn = _.template(liString)
+  var template = templateFn({tweets: tweets})
+  $ulFeed.append(template);
+
+  this.maxCreatedAt = tweets[tweets.length - 1 ].created_at;
 }
 
 
-
 $(function() {
-  $("div.infinite-tweets").infiniteTweets(); 
+  $("div.infinite-tweets").infiniteTweets();
 })

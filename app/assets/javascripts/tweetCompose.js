@@ -74,21 +74,22 @@ $.TweetCompose.prototype.clearInput = function(){
 
 $.TweetCompose.prototype.handleSuccess = function(tweet){
   this.clearInput();
-  var ulSelector = this.$el.data("tweets-ul");
-  var tweetHtml = "<li>" + tweet.content + " -- ";
-  tweetHtml += "<a href=\"/users/" + tweet.user_id + "\">" + tweet.user.username + "</a>--";
-  tweetHtml += tweet.created_at + "<br>";
-  if (tweet.mentions.length > 0){
-    tweetHtml += "<ul>";
-    _.each(tweet.mentions, function(mention){
-      tweetHtml+="<li>"
-      tweetHtml+="<a href=\"/users/" + mention.user_id + "\">" + mention.user.username +"</a>"
-      tweetHtml+="</li>"
-    })
-    tweetHtml += "</ul>"
-  } 
-  tweetHtml += "</li>";
-  $(ulSelector).prepend(tweetHtml);
+  var $ul = $(this.$el.data("tweets-ul"));
+  $ul.trigger("insert-tweet", tweet);
+  // var tweetHtml = "<li>" + tweet.content + " -- ";
+//   tweetHtml += "<a href=\"/users/" + tweet.user_id + "\">" + tweet.user.username + "</a>--";
+//   tweetHtml += tweet.created_at + "<br>";
+//   if (tweet.mentions.length > 0){
+//     tweetHtml += "<ul>";
+//     _.each(tweet.mentions, function(mention){
+//       tweetHtml+="<li>"
+//       tweetHtml+="<a href=\"/users/" + mention.user_id + "\">" + mention.user.username +"</a>"
+//       tweetHtml+="</li>"
+//     })
+//     tweetHtml += "</ul>"
+//   }
+//   tweetHtml += "</li>";
+//   $(ulSelector).prepend(tweetHtml);
 }
 
 $(function(){

@@ -2,6 +2,7 @@ $.InfiniteTweets = function (el) {
   this.$el = $(el);
   this.maxCreatedAt = null;
   this.fetchTweets();
+  this.insertTweet();
 }
 
 $.fn.infiniteTweets = function() {
@@ -31,18 +32,30 @@ $.InfiniteTweets.prototype.fetchTweets = function () {
   })
 };
 
-$.InfiniteTweets.prototype.insertTweets = function (tweets) {
+$.InfiniteTweets.prototype.insertTweet = function(){
   var that = this;
-  var liString = that.$el.find('script').html();
+  that.$el.find('ul#feed').on("insert-tweet", function(event, tweet){
+    var liString = that.$el.find('script').html();
+    var templateFn = _.template(liString)
+    var template = templateFn({tweets: [tweet]})
+    that.$el.find('ul#feed').prepend(template);
+  })
+}
+
+$.InfiniteTweets.prototype.insertTweets = function (tweets) {
+  var liString = this.$el.find('script').html();
   var templateFn = _.template(liString)
   var template = templateFn({tweets: tweets})
-  that.$el.find('ul#feed').append(template);
+  this.$el.find('ul#feed').append(template);
 
   this.maxCreatedAt = tweets[tweets.length - 1 ].created_at;
   if (tweets.length < 20) {
     this.$el.find('a.fetch-more').remove();
   }
 }
+
+
+
 $(function() {
   $("div.infinite-tweets").infiniteTweets(); 
 })

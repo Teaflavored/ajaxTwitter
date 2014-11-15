@@ -43,11 +43,9 @@ $.InfiniteTweets.prototype.insertTweet = function(){
 }
 
 $.InfiniteTweets.prototype.insertTweets = function (tweets) {
-  if (tweets.length < 20) {
-    this.$el.find('a.fetch-more').remove();
-  }
-  var $ulFeed = this.$el.find('ul#feed');
+  var allTweetsLength = tweets.length;
 
+  var $ulFeed = this.$el.find('ul#feed');
   //get all tweet ids of existing li
   var $li = $ulFeed.find("li");
   var tweetIds = $li.map(function(){
@@ -66,6 +64,10 @@ $.InfiniteTweets.prototype.insertTweets = function (tweets) {
   $ulFeed.append(template);
 
   this.maxCreatedAt = tweets[tweets.length - 1 ].created_at;
+
+  if (allTweetsLength < 20) {
+    this.$el.find('a.fetch-more').remove();
+  }
 }
 
 

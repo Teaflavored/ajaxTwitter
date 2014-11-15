@@ -17,7 +17,7 @@ $.UsersSearch.prototype.renderResults = function(users){
     userString += "\"></button></li>"
     that.$ul.append(userString);
   })
-  
+
   $(".follow-toggle").followToggle();
 }
 
@@ -34,10 +34,8 @@ $.UsersSearch.prototype.handleInput = function(){
       }
     })
   })
-  
+
 }
-
-
 
 $.fn.usersSearch = function(){
   return this.each(function(){
